@@ -1,42 +1,84 @@
 #include <jni.h>
+#include <android/native_window_jni.h>
 #include <camera/NdkCameraManager.h>
-#include <string>
+#include <media/NdkImageReader.h>
 #include <android/log.h>
 
 #define LOG_TAG "Native"
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_android_1native_1cpp_MainActivity_stringFromJNI(
-  JNIEnv* env,
-  jobject
-) {
-  std::string hello = "Hello from C++";
-  return env->NewStringUTF(hello.c_str());
+ANativeWindow *nativeWindow = nullptr;
+ACameraDevice *cameraDevice = nullptr;
+ACaptureSessionOutput *sessionOutput = nullptr;
+ACaptureSessionOutputContainer *outputContainer = nullptr;
+ACameraCaptureSession *captureSession = nullptr;
+ACameraOutputTarget *cameraOutputTarget = nullptr;
+AImageReader *imageReader = nullptr;
+ACameraManager *cameraManager = nullptr;
+
+// Callback to process frames
+void imageCallback(void *context, AImageReader *reader) {
+  AImage *image = nullptr;
+  if (AImageReader_acquireLatestImage(reader, &image) == AMEDIA_OK) {
+    LOGE("New frame captured");
+
+    // Get image data (Example: YUV_420)
+    uint8_t *data = nullptr;
+    int dataLength = 0;
+    AImage_getPlaneData(image, 0, &data, &dataLength);
+
+    if (data) {
+      LOGE("Frame size: %d", dataLength);
+    }
+
+    // Close image when done
+    AImage_delete(image);
+  }
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_android_1native_1cpp_MainActivity_openCameraJNI(
-  JNIEnv* env,
-  jobject
-) {
-  ACameraManager* cameraManager = ACameraManager_create();
-  if (!cameraManager) {
-    return env->NewStringUTF("Failed to create Camera Manager");
+// Set up Surface
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_android_1native_1cpp_MainActivity_setSurfaceJNI(JNIEnv *env, jobject, jobject surface) {
+  if (!surface) {
+    LOGE("ERROR: Surface is NULL!");
+    return;
   }
 
-  ACameraIdList* cameraIdList = nullptr;
+  nativeWindow = ANativeWindow_fromSurface(env, surface);
+  LOGE("Surface received.");
+}
+
+// Open camera and start streaming
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_android_1native_1cpp_MainActivity_openCameraJNI(JNIEnv *env, jobject) {
+  LOGE("Opening Camera...");
+  cameraManager = ACameraManager_create();
+
+  ACameraIdList *cameraIdList = nullptr;
   ACameraManager_getCameraIdList(cameraManager, &cameraIdList);
-  if (!cameraIdList || cameraIdList->numCameras < 1) {
-    return env->NewStringUTF("No camera found");
+
+  if (cameraIdList->numCameras > 0) {
+    const char *cameraId = cameraIdList->cameraIds[0];
+
+    ACameraDevice_StateCallbacks cameraDeviceCallbacks = {};
+    cameraDeviceCallbacks.onDisconnected = [](void *, ACameraDevice *device) {
+      ACameraDevice_close(device);
+    };
+
+    if (ACameraManager_openCamera(cameraManager, cameraId, &cameraDeviceCallbacks, &cameraDevice) != ACAMERA_OK) {
+      LOGE("Failed to open camera.");
+      return;
+    }
+    LOGE("Camera opened: %s", cameraId);
   }
 
-  const char* cameraId = cameraIdList->cameraIds[0];
-  LOGD("Opening camera: %s", cameraId);
+  // Setup AImageReader for capturing frames
+  AImageReader_new(640, 480, AIMAGE_FORMAT_YUV_420_888, 4, &imageReader);
+  AImageReader_setImageListener(imageReader, new AImageReader_ImageListener{nullptr, imageCallback});
 
-  // Release resources
+  LOGE("ImageReader setup complete.");
+
   ACameraManager_deleteCameraIdList(cameraIdList);
-  ACameraManager_delete(cameraManager);
-
-  return env->NewStringUTF("Camera opened successfully");
 }

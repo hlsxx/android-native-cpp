@@ -29,6 +29,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         native-lib.cpp)
 
 find_library(camera2ndk-lib camera2ndk)
+find_library(media-lib mediandk)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
@@ -37,4 +38,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
         log
-        ${camera2ndk-lib})
+        ${camera2ndk-lib}
+        ${media-lib}
+)
