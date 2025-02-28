@@ -2,6 +2,7 @@ package com.example.android_native_cpp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log;
 import android.widget.TextView
 import com.example.android_native_cpp.databinding.ActivityMainBinding
 
@@ -17,6 +18,11 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         binding.sampleText.text = stringFromJNI()
+
+        val dirPath = filesDir.absolutePath;
+        // Log.d("Native", dirPath.toString());
+        openCameraJNI();
+        // val fileList = listFilesFromJNI(dirPath)
     }
 
     /**
@@ -24,6 +30,7 @@ class MainActivity : AppCompatActivity() {
      * which is packaged with this application.
      */
     external fun stringFromJNI(): String
+    external fun openCameraJNI(): String;
 
     companion object {
         // Used to load the 'android_native_cpp' library on application startup.
