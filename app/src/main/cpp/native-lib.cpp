@@ -3,9 +3,11 @@
 #include <camera/NdkCameraManager.h>
 #include <media/NdkImageReader.h>
 #include <android/log.h>
+#include <dlfcn.h>
 
 #define LOG_TAG "Native"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define LOGR(...) __android_log_print(ANDROID_LOG_ERROR, "RustLib", __VA_ARGS__)
 
 ANativeWindow *nativeWindow = nullptr;
 ACameraDevice *cameraDevice = nullptr;
@@ -88,6 +90,30 @@ extern "C" {
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_android_1native_1cpp_MainActivity_addNumbersJNI(JNIEnv *env, jobject, jint a, jint b) {
-  LOGE("🔥 Calling Rust function with %d, %d", a, b);
   return add_numbers(a, b);
 }
+// typedef jint (*AddNumbersFn)(jint, jint);
+// extern "C"
+// JNIEXPORT jint JNICALL
+// Java_com_example_android_1native_1cpp_MainActivity_addNumbersJNI(JNIEnv *env, jobject, jint a, jint b) {
+//     void* handle = dlopen("libandroid_rust_lib.so", RTLD_NOW);
+//     if (!handle) {
+//         LOGE("❌ dlopen failed: %s", dlerror());
+//         return -1;
+//     }
+//
+//     LOGE("✅ Rust library loaded!");
+//
+//     AddNumbersFn add_numbers = (AddNumbersFn)dlsym(handle, "add_numbers");
+//     if (!add_numbers) {
+//         LOGE("❌ dlsym failed: %s", dlerror());
+//         return -2;
+//     }
+//
+//     LOGE("✅ Rust function found! Calling...");
+//     jint result = add_numbers(a, b);
+//     LOGE("✅ Rust function returned: %d", result);
+//
+//     dlclose(handle);
+//     return result;
+// }

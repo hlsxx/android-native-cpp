@@ -31,4 +31,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         log
         ${camera2ndk-lib}
         ${media-lib}
-        android_rust_lib)
+        android_rust_lib
+)

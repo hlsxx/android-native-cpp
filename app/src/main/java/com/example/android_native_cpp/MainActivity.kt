@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        Log.d("Native", addNumbersJNI(5, 10).toString());
+        // Log.d("Native", addNumbersJNI(5, 10).toString());
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) 
         != PackageManager.PERMISSION_GRANTED) {
@@ -80,5 +80,5 @@ class MainActivity : AppCompatActivity() {
      */
     external fun setSurfaceJNI(surface: Any)
     external fun openCameraJNI()
-    external fun addNumbersJNI(a: Int, b: Int): Int
+    // external fun addNumbersJNI(a: Int, b: Int): Int
 }
