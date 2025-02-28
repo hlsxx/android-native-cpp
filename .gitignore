@@ -1,0 +1,46 @@
+# Gradle files
+.cache/
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration files
+local.properties
+.idea/
+
+# Android Studio cache & logs
+*.iml
+*.log
+/.idea/caches/
+/.idea/libraries/
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+
+# Compilation output
+*.o
+*.obj
+*.so
+*.a
+*.lib
+*.dll
+*.class
+*.jar
+*.apk
+*.dex
+
+# NDK & CMake specific files
+.cmake/
+.externalNativeBuild/
+cmake-build-debug/
+cmake-build-release/
+app/.externalNativeBuild/
+app/build/
+app/intermediates/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
