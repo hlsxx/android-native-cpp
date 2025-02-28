@@ -77,8 +77,17 @@ Java_com_example_android_1native_1cpp_MainActivity_openCameraJNI(JNIEnv *env, jo
   // Setup AImageReader for capturing frames
   AImageReader_new(640, 480, AIMAGE_FORMAT_YUV_420_888, 4, &imageReader);
   AImageReader_setImageListener(imageReader, new AImageReader_ImageListener{nullptr, imageCallback});
-
-  LOGE("ImageReader setup complete.");
-
+LOGE("ImageReader setup complete.");
   ACameraManager_deleteCameraIdList(cameraIdList);
+}
+
+extern "C" {
+  jint add_numbers(jint a, jint b);
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_android_1native_1cpp_MainActivity_addNumbersJNI(JNIEnv *env, jobject, jint a, jint b) {
+  LOGE("🔥 Calling Rust function with %d, %d", a, b);
+  return add_numbers(a, b);
 }

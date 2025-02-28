@@ -18,6 +18,19 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    companion object {
+        init {
+            try {
+                System.loadLibrary("android_rust_lib")
+                Log.d("RustLib", "Rust library loaded successfully!")
+            } catch (e: UnsatisfiedLinkError) {
+                Log.e("RustLib", "Failed to load Rust library!", e)
+            }
+
+            System.loadLibrary("android_native_cpp")
+        }
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_CODE) {
@@ -34,6 +47,8 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        Log.d("Native", addNumbersJNI(5, 10).toString());
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) 
         != PackageManager.PERMISSION_GRANTED) {
@@ -65,11 +80,5 @@ class MainActivity : AppCompatActivity() {
      */
     external fun setSurfaceJNI(surface: Any)
     external fun openCameraJNI()
-
-    companion object {
-        // Used to load the 'android_native_cpp' library on application startup.
-        init {
-            System.loadLibrary("android_native_cpp")
-        }
-    }
+    external fun addNumbersJNI(a: Int, b: Int): Int
 }
