@@ -38,9 +38,7 @@ void imageCallback(void *context, AImageReader *reader) {
   }
 }
 
-// Set up Surface
-extern "C"
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_example_android_1native_1cpp_MainActivity_setSurfaceJNI(JNIEnv *env, jobject, jobject surface) {
   if (!surface) {
     LOGE("ERROR: Surface is NULL!");
@@ -51,9 +49,7 @@ Java_com_example_android_1native_1cpp_MainActivity_setSurfaceJNI(JNIEnv *env, jo
   LOGE("Surface received.");
 }
 
-// Open camera and start streaming
-extern "C"
-JNIEXPORT void JNICALL
+extern "C" JNIEXPORT void JNICALL
 Java_com_example_android_1native_1cpp_MainActivity_openCameraJNI(JNIEnv *env, jobject) {
   LOGE("Opening Camera...");
   cameraManager = ACameraManager_create();
@@ -84,12 +80,17 @@ LOGE("ImageReader setup complete.");
 }
 
 extern "C" {
-  jint add_numbers(jint a, jint b);
+  extern jint add_numbers(jint a, jint b);
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_android_1native_1cpp_MainActivity_addNumbersJNI(JNIEnv *env, jobject, jint a, jint b) {
+  // void* handle = dlopen("libandroid_rust_lib.so", RTLD_LAZY);
+  // if (!handle) {
+  //   LOGR("Failed to load library %s", dlerror());
+  // }
+
   return add_numbers(a, b);
 }
 // typedef jint (*AddNumbersFn)(jint, jint);
